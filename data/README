@@ -1,0 +1,2 @@
+Export an archive of your tweets (from https://twitter.com/settings/account),
+unzip it, and copy data/tweets.csv here.
