@@ -4,32 +4,22 @@ require "csv"
 
 def main file
   CSV.table(file)
-    .select(&reply?)
-    .group_by(&in_reply_to)
-    .map(&count_users)
-    .sort_by(&sort_by_count)
+    .select(&IsReply)
+    .group_by(&InReplyTo)
+    .map(&CountUsers)
+    .sort_by(&SortByCount)
     .take(10)
-    .each(&report)
+    .each(&Report)
 end
 
-def reply?
-  ->(tweet) { tweet[:text] =~ /^@\w/ }
-end
+IsReply = ->(tweet) { tweet[:text] =~ /^@\w/ }
 
-def in_reply_to
-  ->(reply) { reply[:text][/^@\w+/].downcase }
-end
+InReplyTo = ->(reply) { reply[:text][/^@\w+/].downcase }
 
-def count_users
-  ->((user, replies)) { [user, replies.size] }
-end
+CountUsers = ->((user, replies)) { [user, replies.size] }
 
-def sort_by_count
-  ->((_user, count)) { -count }
-end
+SortByCount = ->((_user, count)) { -count }
 
-def report
-  ->((user, count)) { printf "%15s: %3i\n", user, count }
-end
+Report = ->((user, count)) { printf "%15s: %3i\n", user, count }
 
 main "data/tweets.csv"
